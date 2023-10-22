@@ -1,11 +1,11 @@
-import { GoogleSpreadsheet } from 'google-spreadsheet';
-import { JWT } from 'google-auth-library';
-import dotenv from 'dotenv'
-dotenv.config()
+import doc from '../../config/index.js';
 async function insertToSheet(req, res) {
     try{
-        console.log(req.body)
-        res.send('lol')
+        const sheet = doc.sheetsByTitle['Sheet1'];
+        const email = req.body.email
+        const name = req.body.name
+        await sheet.addRow({ name, email });
+        res.send('Successfully added to sheet')
     } catch (err) {
       throw err;
     }
