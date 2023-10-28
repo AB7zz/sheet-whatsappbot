@@ -15,7 +15,7 @@ async function insertToSheet(req, res) {
         req.body.entry[0].changes[0].value.metadata.phone_number_id;
       console.log(phone_number_id);
       let from = req.body.entry[0].changes[0].value.messages[0].from;
-      let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body;
+      let msg = req.body.entry[0].changes[0].value.messages[0].text.body;
       axios({
         method: "POST",
         url:
@@ -26,14 +26,12 @@ async function insertToSheet(req, res) {
         data: {
           messaging_product: "whatsapp",
           to: from,
-          text: { body: "Inserted " + msg_body + " into google sheets successfully!" },
+          text: { body: "Inserted " + msg + " into google sheets successfully!" },
         },
         headers: { "Content-Type": "application/json" },
       });
       const sheet = doc.sheetsByTitle['Sheet1'];
-      const email = req.body.email
-      const name = req.body.name
-      await sheet.addRow({ name, email });
+      await sheet.addRow({ msg });
       res.send('Successfully added to sheet')
     }
     res.sendStatus(200);

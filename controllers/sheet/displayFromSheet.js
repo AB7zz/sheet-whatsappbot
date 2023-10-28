@@ -6,8 +6,7 @@ async function displayFromSheet(req, res) {
         const data = []
         for(let i=0; i<rows.length; i++){
             const subData = {
-                email: rows[i].get('email'),
-                name: rows[i].get('name'),
+                msg: rows[i].get('msg')
             }
             data.push(subData)
         }
