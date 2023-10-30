@@ -1,3 +1,5 @@
+org: ab7zz
+app: serverless-nodejs-app
 # serverless.yml
 service: serverless-nodejs-app
 provider:
@@ -7,13 +9,14 @@ provider:
   region: eu-central-1
 functions:
   app:
-    handler: app.server # reference the file and exported method
+    handler: index.server # reference the file and exported method
     events: # events trigger lambda functions
-      - http: # this is an API Gateway HTTP event trigger
-          path: /
-          method: ANY
-          cors: true
-      - http: # all routes get proxied to the Express router
-          path: /{proxy+}
-          method: ANY
-          cors: true
+      - http:
+        path: /
+        method: ANY
+        cors: true
+    environment:
+      CLIENT_EMAIL: abhinav@priceseekr-397015.iam.gserviceaccount.com
+      PRIVATE_KEY: {"privateKey":"-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDLqC9QlbfGpYtD\nQsYtiL8BWeidP4mTPVpabxBwWBVWRg13mwPN+Rzy28XFoDCkn0dEEQpgVGHUb3wA\nYIF351SaYY507PM8wZNBBVjZpOncpNJq2MKsA3iQ6Dhs4PYotDhDl1Xe88daMVfb\noCskwRAFok4zuU5JYcvoD5fQvqh3fOy81kp89jKRT42oN4F8VwYNqty4DbY7wXtY\nFNU1nkOSdXNFM8zLrpQweSGouh01wSfDDYUnD2OYWJM3J3/Z3rzQu4ObB/+uhaFF\nTD5teY0UsdoJKyFJmLAYevL0PgX945WMJ2noHmVQrvjKhzvetr/BiQlgBDUYpAsF\nZdcGnlSjAgMBAAECggEAIySRjZlYThoQ7vld00uukiAeqMvnBJZougRCVPCONgX+\nmu4P+QIMwce02AZtfmrR1GgQX1EQVKUsQ7BjhvpPOhitiXW9/3Tz4Rt4Go5/oIh8\nmt1usloi+vZnjjo/oASBVQCPW9q7QtAS9h4sc7ow9pfsYLaQUM9kbVYLf4T28y83\nin99E+6wGK6hVRcydHYqe0YtqIIBLvCgA1fdXBrBRR3LdZ0P/jmu3fin8kNpPj5U\nQ6HxBo7SeKnMd+DmbbE3n6ommuqVo0DnhQ2kZeXCSK4j0sUCl7YGW+DdMyuZLcSo\nKkgtlrvBbEffDwe30+9gRTfLf1IjVO8gyqEZe+DMGQKBgQDxSkHQaWCMQ7igEOBB\na2rF6ephfbL1pO3VPBT3jVqF0ZKrr1Ar9R2m5N/2ghSWkGmRyBezR+Vz0hHRxeZ+\nSvONIKnkBrgZ6C7gtJc+7OdAd0H/DQRTOVtkq8o0yu7Hsxo1FZtIHU3jNvWtod0e\nzxNSvvKWbp9s99pzZyvLqVQwNwKBgQDYEplgQs9w2WDTYlA4cfm+TrOgCuSG7zSO\n6Ebt+qj8wTOI6uDxgmMV0rSslxkqhZHXcmkA97ptSOhP0BJBCovmks30q3FR0vU8\n40KJNmjeqG3IuBYdBuv1eYU7qMJvLe2qSH8NA31E3fS1JZF85AM4Y36YoXLY2uWr\nC8TUCl1Q9QKBgBzGxmKcrq8LxJEScixbKzi/VPybiSRSryqnJ7j+WrVq8RsYpW8Y\npJiq4yr7CImMX4rLWkg/YtYVT5q9B2g4eCN0qc5QHtS4JB8YapFOn6XIk05ftwxV\n4th2xH7XVPLsIUwDb6mCFS/r9hDnJP/volZT/4qBVvIf/SWWQFrhrvCxAoGAM3FC\nKOPfJXvrjIgklzuzfPaZ12mgfOuodLmiYXhDEWIiFd/tzDIByylOMKUMrc39KfEo\nRL22Gdy4yn+8SNXs9ulOtYi3wwZZsrRcm/RjRVeOQ7JoOWLzfI8BBHIqUHP72IXI\nEd4ZzfKWFyapm7VheuRdOJN/l1eORInZw63wB50CgYEAt43ffYt+eYQWlBUE/DAf\n/iy300cIweAukcccxFRHyk8BeQjn7BPm48W6LSohdveuPH2VCrl/TKQXRkigoVAV\nwerqu3Xi/+lYyHzHu8vWHaVHU+Nlp/64G2SVkvxAzRIptpegKKzGkA/rDBYa6zFS\nSW4WX0IZEmSVQBjVs6O/9rE=\n-----END PRIVATE KEY-----\n"}
+      VERIFY_TOKEN: HAPPY
+      WHATSAPP_TOKEN: EAAE6w7rYHZAgBOyZC65VHBMn7RGh390b2ZBJ3VCdBqEpcapQGlEFsAV4P9cGwE5uWXEPWQl6rcOT9PBPU5LtVU7TJ99pEPOki53VZBpxMQx5FLuSZCjIjVvG7ISwgOmCrRtpjk5I10nuCiCtc4evpEh9ZCxMYjq0XwkPWjNMNQRo12A4NtidoJsw0f5N2BdkuJI4GBYsmHky4EWlBM6Id2ZBRgF2fJvJmKExwIZD

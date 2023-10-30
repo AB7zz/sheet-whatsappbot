@@ -2,6 +2,7 @@ import doc from '../../config/index.js';
 async function insertToSheet(req, res) {
   try{
     let body = req.body;
+    const token = process.env.WHATSAPP_TOKEN
     console.log(JSON.stringify(req.body, null, 2));
     if (req.body.object) {
     if (
