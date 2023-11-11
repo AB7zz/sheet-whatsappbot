@@ -1,4 +1,7 @@
+import dotenv from 'dotenv'
+dotenv.config()
 import doc from '../../config/index.js';
+
 async function insertToSheet(req, res) {
   try{
     let body = req.body;

@@ -1,3 +1,7 @@
+import dotenv from 'dotenv'
+
+dotenv.config()
+
 async function verifyWebhook(req, res) {
     try{
       const verify_token = process.env.VERIFY_TOKEN;
