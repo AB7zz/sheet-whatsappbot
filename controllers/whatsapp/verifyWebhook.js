@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-async function verifyWebhook(req, res) {
+const verifyWebhook = (req, res) => {
     try{
       const verify_token = process.env.VERIFY_TOKEN;
       let mode = req.query["hub.mode"];
