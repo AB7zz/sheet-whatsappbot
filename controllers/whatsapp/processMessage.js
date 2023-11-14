@@ -49,7 +49,7 @@ async function processMessage(req, res) {
         let from = req.body.entry[0].changes[0].value.messages[0].from;
         let msg = req.body.entry[0].changes[0].value.messages[0].text.body;
         let reply = msg
-        if(msg.toLower().includes('hello') || msg.toLower().includes('hi')){
+        if(msg.toLowerCase().includes('hello') || msg.toLowerCase().includes('hi')){
           reply = 'Hello, how can I help you?'
         }
         replyMessage(reply, from, token, phone_number_id)
