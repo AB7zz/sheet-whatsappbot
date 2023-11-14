@@ -76,13 +76,13 @@ function generateReply(msg){
   let reply = "Sorry! I didn't get that. Please try again."
   if(msg.toLowerCase().includes('hello') || msg.toLowerCase().includes('hi')){
     reply = "Hello! Choose any one of the following options to proceed further."
-    btnType = 1
+    btnReply = 1
   }else if(msg == 'Analyze message'){
     reply = 'Okay! Please send the message you want to analyze.'
-    btnType = 0
+    btnReply = 0
   }else if(msg == 'Analyze image'){
     reply = 'Okay! Please send the image you want to analyze.'
-    btnType = 0
+    btnReply = 0
   }
   return reply
 }
