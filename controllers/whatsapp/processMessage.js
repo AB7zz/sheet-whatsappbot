@@ -4,60 +4,85 @@ import axios from 'axios'
 
 dotenv.config()
 
+let btnReply = 0
+
 async function insertToSheet(msg){
   const sheet = doc.sheetsByTitle['Sheet1'];
   await sheet.addRow({ msg });
 }
 
 function replyMessage(msg, from, token, phone_number_id) {
-  axios({
-    method: "POST",
-    url:
-      "https://graph.facebook.com/v12.0/" +
-      phone_number_id +
-      "/messages?access_token=" +
-      token,
-    data: {
-      messaging_product: "whatsapp",
-      to: from,
-      type: "interactive",
-      interactive:{
-        type: "button",
-        body: {
-          text: msg,
-        },
-        action: {
-          buttons: [
-            {
-              type: "reply",
-              reply: {
-                id: "1",
-                title: "Analyze message",
+  if(btnReply){
+    axios({
+      method: "POST",
+      url:
+        "https://graph.facebook.com/v12.0/" +
+        phone_number_id +
+        "/messages?access_token=" +
+        token,
+      data: {
+        messaging_product: "whatsapp",
+        to: from,
+        type: "interactive",
+        interactive:{
+          type: "button",
+          body: {
+            text: msg,
+          },
+          action: {
+            buttons: [
+              {
+                type: "reply",
+                reply: {
+                  id: "1",
+                  title: "Analyze message",
+                }
+              },
+              {
+                type: "reply",
+                reply: {
+                  id: "2",
+                  title: "Analyze image",
+                }
               }
-            },
-            {
-              type: "reply",
-              reply: {
-                id: "2",
-                title: "Analyze image",
-              }
-            }
-          ]
+            ]
+          }
         }
-      }
-    },
-    headers: { "Content-Type": "application/json" },
-  });
+      },
+      headers: { "Content-Type": "application/json" },
+    });
+  }else{
+    axios({
+      method: "POST",
+      url:
+        "https://graph.facebook.com/v12.0/" +
+        phone_number_id +
+        "/messages?access_token=" +
+        token,
+      data: {
+        messaging_product: "whatsapp",
+        to: from,
+        text:{
+          body: msg
+        }
+      },
+      headers: { "Content-Type": "application/json" },
+    });
+
+  }
 }
 
 function generateReply(msg){
   let reply = "Sorry! I didn't get that. Please try again."
   if(msg.toLowerCase().includes('hello') || msg.toLowerCase().includes('hi')){
     reply = "Hello! Choose any one of the following options to proceed further."
+    btnType = 1
   }else if(msg == 'Analyze message'){
     reply = 'Okay! Please send the message you want to analyze.'
+    btnType = 0
   }else if(msg == 'Analyze image'){
     reply = 'Okay! Please send the image you want to analyze.'
+    btnType = 0
   }
   return reply
 }
