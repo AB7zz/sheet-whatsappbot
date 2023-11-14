@@ -39,7 +39,7 @@ function replyMessage(msg, from, token, phone_number_id) {
               type: "reply",
               reply: {
                 id: "2",
-                title: "Anaylze image",
+                title: "Analyze image",
               }
             }
           ]
@@ -77,7 +77,8 @@ async function processMessage(req, res) {
         let phone_number_id =
           req.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = req.body.entry[0].changes[0].value.messages[0].from;
-        let msg = req.body.entry[0].changes[0].value.messages[0].text.body;
+        let msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body;
+        console.log(req.body.entry[0].changes[0].value.messages)
         let reply = generateReply(msg)
         replyMessage(reply, from, token, phone_number_id)
         insertToSheet(msg)
