@@ -78,7 +78,7 @@ async function processMessage(req, res) {
           req.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = req.body.entry[0].changes[0].value.messages[0].from;
         let msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body;
-        console.log(req.body.entry[0].changes[0].value.messages)
+        console.log(req.body.entry[0].changes[0].value.messages[0])
         let reply = generateReply(msg)
         replyMessage(reply, from, token, phone_number_id)
         insertToSheet(msg)
