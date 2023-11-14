@@ -77,7 +77,7 @@ async function processMessage(req, res) {
         let phone_number_id =
           req.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = req.body.entry[0].changes[0].value.messages[0].from;
-        let msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body;
+        let msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body || req.body.entry[0].changes[0].value.messages[0]?.interactive?.button_reply.title;
         console.log(req.body.entry[0].changes[0].value.messages[0])
         let reply = generateReply(msg)
         replyMessage(reply, from, token, phone_number_id)
