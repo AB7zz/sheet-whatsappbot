@@ -20,7 +20,7 @@ function replyMessage(msg, from, token, phone_number_id) {
     data: {
       messaging_product: "whatsapp",
       to: from,
-      text: { body: msg },
+      type: "location",
       location: {
         latitude: 12.009,
         longitude: 45.008,
@@ -49,7 +49,7 @@ async function processMessage(req, res) {
         let from = req.body.entry[0].changes[0].value.messages[0].from;
         let msg = req.body.entry[0].changes[0].value.messages[0].text.body;
         let reply = msg
-        if(msg.includes('hello') || msg.includes('hi')){
+        if(msg.toLower().includes('hello') || msg.toLower().includes('hi')){
           reply = 'Hello, how can I help you?'
         }
         replyMessage(reply, from, token, phone_number_id)
