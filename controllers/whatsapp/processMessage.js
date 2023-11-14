@@ -50,6 +50,18 @@ function replyMessage(msg, from, token, phone_number_id) {
   });
 }
 
+function generateReply(msg){
+  let reply = "Sorry! I didn't get that. Please try again."
+  if(msg.toLowerCase().includes('hello') || msg.toLowerCase().includes('hi')){
+    reply = "Hello! Choose any one of the following options to proceed further."
+  }else if(msg == 'Analyze message'){
+    reply = 'Okay! Please send the message you want to analyze.'
+  }else if(msg == 'Analyze image'){
+    reply = 'Okay! Please send the image you want to analyze.'
+  }
+  return reply
+}
+
 async function processMessage(req, res) {
   try{
     const token = process.env.WHATSAPP_TOKEN
@@ -66,10 +78,7 @@ async function processMessage(req, res) {
           req.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = req.body.entry[0].changes[0].value.messages[0].from;
         let msg = req.body.entry[0].changes[0].value.messages[0].text.body;
-        let reply = msg
-        if(msg.toLowerCase().includes('hello') || msg.toLowerCase().includes('hi')){
-          reply = "Hello! Choose any one of the following options to proceed further."
-        }
+        let reply = generateReply(msg)
         replyMessage(reply, from, token, phone_number_id)
         insertToSheet(msg)
         res.send('Successfully added to sheet')
