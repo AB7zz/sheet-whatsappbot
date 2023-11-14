@@ -20,27 +20,30 @@ function replyMessage(msg, from, token, phone_number_id) {
     data: {
       messaging_product: "whatsapp",
       to: from,
-      type: "button",
-      body: {
-        text: msg,
-      },
-      action: {
-        buttons: [
-          {
-            type: "reply",
-            reply: {
-              id: "1",
-              title: "Analyze message",
+      type: "interactive",
+      interactive:{
+        type: "button",
+        body: {
+          text: msg,
+        },
+        action: {
+          buttons: [
+            {
+              type: "reply",
+              reply: {
+                id: "1",
+                title: "Analyze message",
+              }
+            },
+            {
+              type: "reply",
+              reply: {
+                id: "2",
+                title: "Anaylze image",
+              }
             }
-          },
-          {
-            type: "reply",
-            reply: {
-              id: "2",
-              title: "Anaylze image",
-            }
-          }
-        ]
+          ]
+        }
       }
     },
     headers: { "Content-Type": "application/json" },
