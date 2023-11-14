@@ -20,12 +20,27 @@ function replyMessage(msg, from, token, phone_number_id) {
     data: {
       messaging_product: "whatsapp",
       to: from,
-      type: "location",
-      location: {
-        latitude: 12.009,
-        longitude: 45.008,
-        name: "India",
-        address: "India",
+      type: "button",
+      body: {
+        text: msg,
+      },
+      action: {
+        buttons: [
+          {
+            type: "reply",
+            reply: {
+              id: "1",
+              title: "Analyze message",
+            }
+          },
+          {
+            type: "reply",
+            reply: {
+              id: "2",
+              title: "Anaylze image",
+            }
+          }
+        ]
       }
     },
     headers: { "Content-Type": "application/json" },
@@ -50,7 +65,7 @@ async function processMessage(req, res) {
         let msg = req.body.entry[0].changes[0].value.messages[0].text.body;
         let reply = msg
         if(msg.toLowerCase().includes('hello') || msg.toLowerCase().includes('hi')){
-          reply = 'Hello, how can I help you?'
+          reply = "Hello! Choose any one of the following options to proceed further."
         }
         replyMessage(reply, from, token, phone_number_id)
         insertToSheet(msg)
