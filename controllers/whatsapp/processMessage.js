@@ -95,7 +95,7 @@ async function extractTextFromImage(msg){
   const form = new FormData()
   form.append('my_file', msg);
   const textReq = await axios.post('http://127.0.0.1:8000/text', form)
-  return textReq.data
+  return textReq.data[0]
 }
 
 async function processMessage(req, res) {
@@ -114,7 +114,7 @@ async function processMessage(req, res) {
           req.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = req.body.entry[0].changes[0].value.messages[0].from;
         let msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body || req.body.entry[0].changes[0].value.messages[0]?.interactive?.button_reply.title;
-        console.log(req.body.entry[0].changes[0].value.messages[0])
+        console.log(msg)
         let reply 
         if(analyzeImg){
           msg = extractTextFromImage(msg)

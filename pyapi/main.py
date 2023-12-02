@@ -1,11 +1,12 @@
 from typing import Union
-from fastapi import FastAPI, File, UploadFile, Request, Form
+from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 import cv2
 
 import pytesseract
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\tesseract\tesseract.exe'
+# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\tesseract\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = '/app/.apt/usr/bin/tesseract'
 
 app = FastAPI()
 
