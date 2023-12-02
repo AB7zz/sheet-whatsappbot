@@ -5,6 +5,8 @@ import axios from 'axios'
 dotenv.config()
 
 let btnReply = 0
+let analyzeImg = 0
+let analyzeText = 0
 
 async function insertToSheet(msg){
   const sheet = doc.sheetsByTitle['Sheet1'];
@@ -79,12 +81,21 @@ function generateReply(msg){
     btnReply = 1
   }else if(msg == 'Analyze message'){
     reply = 'Okay! Please send the message you want to analyze.'
+    analyzeText = 1
     btnReply = 0
   }else if(msg == 'Analyze image'){
     reply = 'Okay! Please send the image you want to analyze.'
+    analyzeImg = 1
     btnReply = 0
   }
   return reply
+}
+
+async function extractTextFromImage(msg){
+  const form = new FormData()
+  form.append('my_file', msg);
+  const textReq = await axios.post('http://127.0.0.1:8000/text', form)
+  return textReq.data
 }
 
 async function processMessage(req, res) {
@@ -104,7 +115,17 @@ async function processMessage(req, res) {
         let from = req.body.entry[0].changes[0].value.messages[0].from;
         let msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body || req.body.entry[0].changes[0].value.messages[0]?.interactive?.button_reply.title;
         console.log(req.body.entry[0].changes[0].value.messages[0])
-        let reply = generateReply(msg)
+        let reply 
+        if(analyzeImg){
+          msg = extractTextFromImage(msg)
+          reply = 'Image analyzed and inserted into sheet!'
+          analyzeImg = 0
+        }else if(analyzeText){
+          reply = 'Text analyzed and inserted into sheet!'
+          analyzeText = 0
+        }else{
+          reply = generateReply(msg)
+        }
         replyMessage(reply, from, token, phone_number_id)
         insertToSheet(msg)
         res.send('Successfully added to sheet')

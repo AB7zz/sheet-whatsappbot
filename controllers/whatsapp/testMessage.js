@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import doc from '../../config/index.js';
 import axios from 'axios'
 import fs from 'fs'
+import FormData from 'form-data'
 
 dotenv.config()
 
@@ -91,11 +92,10 @@ function generateReply(msg){
 async function testMessage(req, res) {
   try{
     console.log('triggered')
-    let file
-    fs.readFile('assets/test.png', (err, data) => {
-      file = data
-    });
-    await axios.post('http://127.0.0.1:8000/text', {file})
+    const form = new FormData()
+    form.append('my_file', fs.createReadStream('assets/test.png'));
+    const textReq = await axios.post('http://127.0.0.1:8000/text', form)
+    const text = text.data[0]
     res.send('sent!')
     // const token = process.env.WHATSAPP_TOKEN
     // if (req.body.object) {
