@@ -118,11 +118,11 @@ async function processMessage(req, res) {
         let phone_number_id =
           req.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = req.body.entry[0].changes[0].value.messages[0].from;
-        let msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body || req.body.entry[0].changes[0].value.messages[0]?.interactive?.button_reply.title || req.body.entry[0].changes[0].value.messages[0]?.image;
+        let msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body || req.body.entry[0].changes[0].value.messages[0]?.interactive?.button_reply.title || req.body.entry[0].changes[0].value.messages[0]?.image.id;
         console.log(msg)
         let reply 
         if(analyzeImg){
-          msg = extractTextFromImage(msg)
+          // msg = extractTextFromImage(msg)
           reply = 'Image analyzed and inserted into sheet!'
           analyzeImg = 0
         }else if(analyzeText){
