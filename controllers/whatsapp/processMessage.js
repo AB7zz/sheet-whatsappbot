@@ -93,43 +93,53 @@ function generateReply(msg){
 }
 
 async function extractTextFromImage(){
-  const form = new FormData()
-  form.append('image', fs.readFileSync('assets/test.png'));
-  const textReq = await axios.post('https://api.api-ninjas.com/v1/imagetotext', form, {
-    headers: {
-      'X-Api-Key': process.env.IMAGE_TO_TEXT_API_KEY,
-    }
-  })
-  const sentence = textReq.data.map(item => item.text).join(' ')
-  return sentence
+  try {
+    const form = new FormData()
+    form.append('image', fs.readFileSync('assets/test.png'));
+    const textReq = await axios.post('https://api.api-ninjas.com/v1/imagetotext', form, {
+      headers: {
+        'X-Api-Key': process.env.IMAGE_TO_TEXT_API_KEY,
+      }
+    })
+    const sentence = textReq.data.map(item => item.text).join(' ')
+    return sentence
+  } catch (error) {
+    console.log(error)
+    return 'Some error occurred!'
+  }
 }
 
 async function downloadImg(msg){
-  const res2 = await axios.get(`https://graph.facebook.com/v18.0/${msg}`, {
-      headers:{
-       'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
-      }
-    })
-    axios({
-      method: 'GET',
-      url: res2.data.url,
-      headers: {
-        'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
-      },
-      responseType: 'stream'
-    })
-      .then(response => {2
-        response.data.pipe(fs.createWriteStream('assets/test.png'), {
-          flags: 'w'
-        });
-    
-        response.data.on('end', () => {
-          console.log(`Downloaded media file to ${'assets'}`);
-        });
+  try {
+    const urlReq = await axios.get(`https://graph.facebook.com/v18.0/${msg}`, {
+        headers:{
+         'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
+        }
       })
-      .catch(error => {
-        console.error('Error downloading media file:', error.message);
-      });
+      axios({
+        method: 'GET',
+        url: urlReq.data.url,
+        headers: {
+          'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
+        },
+        responseType: 'stream'
+      })
+        .then(response => {2
+          response.data.pipe(fs.createWriteStream('assets/test.png'), {
+            flags: 'w'
+          });
+      
+          response.data.on('end', () => {
+            console.log(`Downloaded media file to ${'assets'}`);
+          });
+        })
+        .catch(error => {
+          console.error('Error downloading media file:', error.message);
+        });
+  } catch (error) {
+    console.log(error)
+    return 'Some error occurred!'
+  }
 }
 
 async function processMessage(req, res) {
@@ -151,7 +161,7 @@ async function processMessage(req, res) {
         console.log(msg)
         let reply 
         if(analyzeImg){
-          downloadImg(msg)
+          msg = downloadImg(msg)
           msg = extractTextFromImage()
           reply = 'Image analyzed and inserted into sheet!'
           analyzeImg = 0
