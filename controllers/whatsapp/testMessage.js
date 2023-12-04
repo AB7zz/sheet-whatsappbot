@@ -93,9 +93,18 @@ async function testMessage(req, res) {
   try{
     console.log('triggered')
     const form = new FormData()
-    form.append('my_file', fs.createReadStream('assets/test.png'));
-    const textReq = await axios.post('http://127.0.0.1:8000/text', form)
-    const text = text.data[0]
+    // form.append('my_file', fs.createReadStream('assets/test.png'));
+    // const textReq = await axios.post('http://127.0.0.1:8000/text', form)
+    // const text = text.data[0]
+    form.append('image', fs.createReadStream('assets/test.png'));
+    const textReq = await axios.post('https://api.api-ninjas.com/v1/imagetotext', form, {
+      headers: {
+        'X-Api-Key': process.env.IMAGE_TO_TEXT_API_KEY,
+      }
+    })
+    // console.log(textReq)
+    const sentence = textReq.data.map(item => item.text).join(' ');
+    console.log(sentence)
     res.send('sent!')
     // const token = process.env.WHATSAPP_TOKEN
     // if (req.body.object) {

@@ -93,9 +93,14 @@ function generateReply(msg){
 
 async function extractTextFromImage(msg){
   const form = new FormData()
-  form.append('my_file', msg);
-  const textReq = await axios.post('http://127.0.0.1:8000/text', form)
-  return textReq.data[0]
+  form.append('image', msg);
+  const textReq = await axios.post('https://api.api-ninjas.com/v1/imagetotext', form, {
+    headers: {
+      'X-Api-Key': process.env.IMAGE_TO_TEXT_API_KEY,
+    }
+  })
+  const sentence = textReq.data.map(item => item.text).join(' ')
+  return sentence
 }
 
 async function processMessage(req, res) {
