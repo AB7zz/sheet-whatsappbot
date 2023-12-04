@@ -8,6 +8,7 @@ dotenv.config()
 let btnReply = 0
 let analyzeImg = 0
 let analyzeText = 0
+let msg
 
 async function insertToSheet(msg){
   const sheet = doc.sheetsByTitle['Sheet1'];
@@ -109,37 +110,41 @@ async function extractTextFromImage(){
   }
 }
 
-async function downloadImg(msg){
+async function getURL(msg){
   try {
     const urlReq = await axios.get(`https://graph.facebook.com/v18.0/${msg}`, {
         headers:{
          'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
         }
       })
-      axios({
-        method: 'GET',
-        url: urlReq.data.url,
-        headers: {
-          'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
-        },
-        responseType: 'stream'
-      })
-        .then(response => {2
-          response.data.pipe(fs.createWriteStream('assets/test.png'), {
-            flags: 'w'
-          });
-      
-          response.data.on('end', () => {
-            console.log(`Downloaded media file to ${'assets'}`);
-          });
-        })
-        .catch(error => {
-          console.error('Error downloading media file:', error.message);
-        });
+    return urlReq.data.url
   } catch (error) {
     console.log(error)
     return 'Some error occurred!'
   }
+}
+
+async function downloadImg(imgURL){
+  axios({
+    method: 'GET',
+    url: imgURL,
+    headers: {
+      'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
+    },
+    responseType: 'stream'
+  })
+    .then(response => {2
+      response.data.pipe(fs.createWriteStream('assets/test.png'), {
+        flags: 'w'
+      });
+  
+      response.data.on('end', () => {
+        console.log(`Downloaded media file to ${'assets'}`);
+      });
+    })
+    .catch(error => {
+      console.error('Error downloading media file:', error.message);
+    });
 }
 
 async function processMessage(req, res) {
@@ -157,11 +162,12 @@ async function processMessage(req, res) {
         let phone_number_id =
           req.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = req.body.entry[0].changes[0].value.messages[0].from;
-        let msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body || req.body.entry[0].changes[0].value.messages[0]?.interactive?.button_reply.title || req.body.entry[0].changes[0].value.messages[0]?.image.id;
+        msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body || req.body.entry[0].changes[0].value.messages[0]?.interactive?.button_reply.title || req.body.entry[0].changes[0].value.messages[0]?.image.id;
         console.log(msg)
         let reply 
         if(analyzeImg){
-          await downloadImg(msg)
+          let imgURL = await getURL(msg)
+          await downloadImg(imgURL)
           msg = await extractTextFromImage()
           reply = 'Image analyzed and inserted into sheet!'
           analyzeImg = 0
