@@ -92,32 +92,15 @@ function generateReply(msg){
 async function testMessage(req, res) {
   try{
     console.log('triggered')
-    const res2 = await axios.get('https://graph.facebook.com/v18.0/362726262808852', {
-      headers:{
-       'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
+    const form = new FormData()
+    form.append('image', fs.readFileSync('assets/test.png'));
+    const textReq = await axios.post('https://api.api-ninjas.com/v1/imagetotext', form, {
+      headers: {
+        'X-Api-Key': process.env.IMAGE_TO_TEXT_API_KEY,
       }
     })
-    console.log(res2.data.url)
-    axios({
-      method: 'GET',
-      url: res2.data.url,
-      headers: {
-        'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
-      },
-      responseType: 'stream'
-    })
-      .then(response => {2
-        response.data.pipe(fs.createWriteStream('assets/test.png'), {
-          flags: 'w'
-        });
-    
-        response.data.on('end', () => {
-          console.log(`Downloaded media file to ${'assets'}`);
-        });
-      })
-      .catch(error => {
-        console.error('Error downloading media file:', error.message);
-      });
+    const sentence = textReq.data.map(item => item.text).join(' ')
+    console.log(sentence)
     res.send('lol')
     // const token = process.env.WHATSAPP_TOKEN
     // if (req.body.object) {

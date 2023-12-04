@@ -161,8 +161,8 @@ async function processMessage(req, res) {
         console.log(msg)
         let reply 
         if(analyzeImg){
-          msg = downloadImg(msg)
-          msg = extractTextFromImage()
+          await downloadImg(msg)
+          msg = await extractTextFromImage()
           reply = 'Image analyzed and inserted into sheet!'
           analyzeImg = 0
         }else if(analyzeText){
