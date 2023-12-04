@@ -162,7 +162,8 @@ async function processMessage(req, res) {
           reply = generateReply(msg)
         }
         replyMessage(reply, from, token, phone_number_id)
-        insertToSheet(msg)
+        console.log(msg)
+        // insertToSheet(msg)
         res.send('Successfully added to sheet')
       }
     } else {
