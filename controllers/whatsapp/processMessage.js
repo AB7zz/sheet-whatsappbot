@@ -91,9 +91,9 @@ function generateReply(msg){
   return reply
 }
 
-async function extractTextFromImage(msg){
+async function extractTextFromImage(){
   const form = new FormData()
-  form.append('image', msg);
+  form.append('image', fs.readFileSync('assets/test.png'));
   const textReq = await axios.post('https://api.api-ninjas.com/v1/imagetotext', form, {
     headers: {
       'X-Api-Key': process.env.IMAGE_TO_TEXT_API_KEY,
@@ -101,6 +101,34 @@ async function extractTextFromImage(msg){
   })
   const sentence = textReq.data.map(item => item.text).join(' ')
   return sentence
+}
+
+async function downloadImg(msg){
+  const res2 = await axios.get(`https://graph.facebook.com/v18.0/${msg}`, {
+      headers:{
+       'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
+      }
+    })
+    axios({
+      method: 'GET',
+      url: res2.data.url,
+      headers: {
+        'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
+      },
+      responseType: 'stream'
+    })
+      .then(response => {2
+        response.data.pipe(fs.createWriteStream('assets/test.png'), {
+          flags: 'w'
+        });
+    
+        response.data.on('end', () => {
+          console.log(`Downloaded media file to ${'assets'}`);
+        });
+      })
+      .catch(error => {
+        console.error('Error downloading media file:', error.message);
+      });
 }
 
 async function processMessage(req, res) {
@@ -122,7 +150,8 @@ async function processMessage(req, res) {
         console.log(msg)
         let reply 
         if(analyzeImg){
-          // msg = extractTextFromImage(msg)
+          downloadImg(msg)
+          msg = extractTextFromImage()
           reply = 'Image analyzed and inserted into sheet!'
           analyzeImg = 0
         }else if(analyzeText){

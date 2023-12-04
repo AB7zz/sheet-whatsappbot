@@ -92,20 +92,33 @@ function generateReply(msg){
 async function testMessage(req, res) {
   try{
     console.log('triggered')
-    const form = new FormData()
-    // form.append('my_file', fs.createReadStream('assets/test.png'));
-    // const textReq = await axios.post('http://127.0.0.1:8000/text', form)
-    // const text = text.data[0]
-    form.append('image', fs.createReadStream('assets/test.png'));
-    const textReq = await axios.post('https://api.api-ninjas.com/v1/imagetotext', form, {
-      headers: {
-        'X-Api-Key': process.env.IMAGE_TO_TEXT_API_KEY,
+    const res2 = await axios.get('https://graph.facebook.com/v18.0/362726262808852', {
+      headers:{
+       'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
       }
     })
-    // console.log(textReq)
-    const sentence = textReq.data.map(item => item.text).join(' ');
-    console.log(sentence)
-    res.send('sent!')
+    console.log(res2.data.url)
+    axios({
+      method: 'GET',
+      url: res2.data.url,
+      headers: {
+        'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
+      },
+      responseType: 'stream'
+    })
+      .then(response => {2
+        response.data.pipe(fs.createWriteStream('assets/test.png'), {
+          flags: 'w'
+        });
+    
+        response.data.on('end', () => {
+          console.log(`Downloaded media file to ${'assets'}`);
+        });
+      })
+      .catch(error => {
+        console.error('Error downloading media file:', error.message);
+      });
+    res.send('lol')
     // const token = process.env.WHATSAPP_TOKEN
     // if (req.body.object) {
     //   if (
