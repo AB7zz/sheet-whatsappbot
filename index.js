@@ -2,6 +2,13 @@ import express from 'express'
 import cors from 'cors'
 import routes from './routes/index.js'
 import dotenv from 'dotenv'
+import path from 'path'
+import fs from 'fs'
+
+let img_dir = path.join(process.cwd(), 'assets/');
+
+if (!fs.existsSync(img_dir))
+    fs.mkdirSync(img_dir);
 
 dotenv.config()
 

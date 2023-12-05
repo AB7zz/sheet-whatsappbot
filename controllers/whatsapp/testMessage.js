@@ -3,6 +3,12 @@ import doc from '../../config/index.js';
 import axios from 'axios'
 import fs from 'fs'
 import FormData from 'form-data'
+import path from 'path'
+
+let img_dir = path.join(process.cwd(), 'assets/');
+
+if (!fs.existsSync(img_dir))
+    fs.mkdirSync(img_dir);
 
 dotenv.config()
 
@@ -93,7 +99,12 @@ async function testMessage(req, res) {
   try{
     console.log('triggered')
     const form = new FormData()
-    form.append('image', fs.readFileSync('assets/test.png'));
+    let img
+    let filepath = path.join(process.cwd(),'assets/test.png');
+    fs.readFile('assets/test.png', (data) => {
+      img = data
+    })
+    form.append('image', fs.readFileSync(filepath));
     const textReq = await axios.post('https://api.api-ninjas.com/v1/imagetotext', form, {
       headers: {
         'X-Api-Key': process.env.IMAGE_TO_TEXT_API_KEY,
