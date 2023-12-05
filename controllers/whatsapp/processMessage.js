@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import doc from '../../config/index.js';
 import axios from 'axios'
 import fs from 'fs'
+import path from 'path'
 
 dotenv.config()
 
