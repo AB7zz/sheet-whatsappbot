@@ -95,6 +95,7 @@ function generateReply(msg){
 
 async function extractTextFromImage(){
   try {
+    console.log('------EXTARCTING TEXT FROM IMAGE------')
     const form = new FormData()
     form.append('image', fs.readFileSync('assets/test.png'));
     const textReq = await axios.post('https://api.api-ninjas.com/v1/imagetotext', form, {
@@ -112,6 +113,7 @@ async function extractTextFromImage(){
 
 async function getURL(msg){
   try {
+    console.log('------FETCHING IMAGE URL------')
     const urlReq = await axios.get(`https://graph.facebook.com/v18.0/${msg}`, {
         headers:{
          'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
@@ -125,26 +127,23 @@ async function getURL(msg){
 }
 
 async function downloadImg(imgURL){
-  axios({
-    method: 'GET',
-    url: imgURL,
-    headers: {
-      'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
-    },
-    responseType: 'stream'
-  })
-    .then(response => {2
-      response.data.pipe(fs.createWriteStream('assets/test.png'), {
-        flags: 'w'
-      });
-  
-      response.data.on('end', () => {
-        console.log(`Downloaded media file to ${'assets'}`);
-      });
-    })
-    .catch(error => {
-      console.error('Error downloading media file:', error.message);
+  try{
+    console.log('------DOWNLAODING IMAGE------')
+    const response = await axios.get(imgURL, {
+      headers: {
+        'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
+      },
+      responseType: 'stream'
     });
+  
+    await new Promise((resolve, reject) => {
+      response.data.pipe(fs.createWriteStream('assets/test.png'))
+        .on('finish', resolve)
+        .on('error', reject);
+    });
+  }catch(err){
+    console.log('Could not download image')
+  }
 }
 
 async function processMessage(req, res) {
