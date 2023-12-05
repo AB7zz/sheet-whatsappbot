@@ -97,7 +97,7 @@ async function extractTextFromImage(){
   try {
     console.log('------EXTARCTING TEXT FROM IMAGE------')
     const form = new FormData()
-    form.append('image', fs.readFileSync('assets/test.png'));
+    form.append('image', await fs.readFile('assets/test.png'));
     const textReq = await axios.post('https://api.api-ninjas.com/v1/imagetotext', form, {
       headers: {
         'X-Api-Key': process.env.IMAGE_TO_TEXT_API_KEY,
