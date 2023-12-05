@@ -133,18 +133,18 @@ async function getURL(msg){
 async function downloadImg(imgURL){
   try{
     console.log('------DOWNLAODING IMAGE------')
-    // const response = await axios.get(imgURL, {
-    //   headers: {
-    //     'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
-    //   },
-    //   responseType: 'stream'
-    // });
+    const response = await axios.get(imgURL, {
+      headers: {
+        'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
+      },
+      responseType: 'stream'
+    });
   
-    // await new Promise((resolve, reject) => {
-    //   response.data.pipe(fs.createWriteStream('assets/test.png'))
-    //     .on('finish', resolve)
-    //     .on('error', reject);
-    // });
+    await new Promise((resolve, reject) => {
+      response.data.pipe(fs.createWriteStream('assets/test.png'))
+        .on('finish', resolve)
+        .on('error', reject);
+    });
   }catch(err){
     console.log('Could not download image')
   }
@@ -169,8 +169,8 @@ async function processMessage(req, res) {
         console.log(msg)
         let reply 
         if(analyzeImg){
-          // let imgURL = await getURL(msg)
-          // await downloadImg(imgURL)
+          let imgURL = await getURL(msg)
+          await downloadImg(imgURL)
           msg = await extractTextFromImage()
           reply = 'Image analyzed and inserted into sheet!'
           analyzeImg = 0
