@@ -93,6 +93,7 @@ function generateReply(msg){
   return reply
 }
 
+
 async function extractTextFromImage(){
   try {
     console.log('------EXTARCTING TEXT FROM IMAGE------')
