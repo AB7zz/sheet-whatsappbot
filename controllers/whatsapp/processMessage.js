@@ -104,6 +104,7 @@ async function extractTextFromImage(){
       }
     })
     const sentence = textReq.data.map(item => item.text).join(' ')
+    console.log(sentence)
     return sentence
   } catch (error) {
     console.log(error)
@@ -129,18 +130,18 @@ async function getURL(msg){
 async function downloadImg(imgURL){
   try{
     console.log('------DOWNLAODING IMAGE------')
-    const response = await axios.get(imgURL, {
-      headers: {
-        'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
-      },
-      responseType: 'stream'
-    });
+    // const response = await axios.get(imgURL, {
+    //   headers: {
+    //     'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
+    //   },
+    //   responseType: 'stream'
+    // });
   
-    await new Promise((resolve, reject) => {
-      response.data.pipe(fs.createWriteStream('assets/test.png'))
-        .on('finish', resolve)
-        .on('error', reject);
-    });
+    // await new Promise((resolve, reject) => {
+    //   response.data.pipe(fs.createWriteStream('assets/test.png'))
+    //     .on('finish', resolve)
+    //     .on('error', reject);
+    // });
   }catch(err){
     console.log('Could not download image')
   }
