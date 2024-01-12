@@ -250,6 +250,8 @@ async function processMessage(req, res) {
         }
         
         res.send('Successfully added to sheet')
+      }else{
+        res.sendStatus(404)
       }
     } else {
       res.sendStatus(404);
