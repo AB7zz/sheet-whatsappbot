@@ -12,7 +12,7 @@ if (!fs.existsSync(img_dir))
 
 dotenv.config()
 
-let step1 = [], step2 = [], step3 = [], step4 = [], step5 = [], upiID, studentName, admissionNo
+let step1 = [], step2 = [], step3 = [], step4 = [], step5 = [], upiID, schoolName, studentName, academicYear, admissionNo
 let msg
 
 async function insertToSheet(upiId, schoolName, studentName, academicYear, admissionNo){
