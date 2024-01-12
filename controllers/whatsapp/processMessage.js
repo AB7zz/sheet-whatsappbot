@@ -36,7 +36,6 @@ function replyMessage(msg, from, token, phone_number_id, buttons) {
         type: "interactive",
         interactive:{
           type: "list",
-          type: "list",
           header: {
             type: "text",
             text: "your-header-content"
@@ -48,24 +47,14 @@ function replyMessage(msg, from, token, phone_number_id, buttons) {
             text: "your-footer-content"
           },
           action: {
-            button: "cta-button-content",
+            button: "OK",
             sections:[
               {
-                title:"your-section-title-content",
+                title:"Title",
                 rows: [
                   {
-                    id:"unique-row-identifier",
-                    title: "row-title-content",
-                    description: "row-description-content",           
-                  }
-                ]
-              },
-              {
-                title:"your-section-title-content",
-                rows: [
-                  {
-                    id:"unique-row-identifier",
-                    title: "row-title-content",
+                    id:"1",
+                    title: "title",
                     description: "row-description-content",           
                   }
                 ]
