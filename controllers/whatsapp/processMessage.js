@@ -86,6 +86,10 @@ async function getURL(msg){
 async function downloadImg(from, imgURL){
   try{
     console.log('------DOWNLAODING IMAGE------')
+    const directory = `assets/${from.replace(/\s/g, '')}`;
+    if (!fs.existsSync(directory)) {
+      fs.mkdirSync(directory, { recursive: true });
+    }
     const response = await axios.get(imgURL, {
       headers: {
         'Authorization': `Bearer ${process.env.GRAPH_API_TOKEN}`
@@ -94,7 +98,7 @@ async function downloadImg(from, imgURL){
     });
   
     await new Promise((resolve, reject) => {
-      response.data.pipe(fs.createWriteStream(`assets/${from.replace(/\s/g, '')}/UPIID.png`))
+      response.data.pipe(fs.createWriteStream(`${directory}/UPIID.png`))
         .on('finish', resolve)
         .on('error', reject);
     });
@@ -155,11 +159,16 @@ async function processMessage(req, res) {
         if(!msg || msg.length == 0){
           msg = req.body.entry[0].changes[0].value.messages[0]?.image.id
           if(!msg || msg.length == 0){
+            replyMessage("Please enter a message", from, token, phone_number_id, [])
             res.send('No message found')
           }
           const imgURL = await getURL(msg)
           await downloadImg(from, imgURL)
           msg = await extractTextFromImage(from)
+          if(!msg || msg.length == 0){
+            replyMessage("Some error occurred. Please type in the UPI ID", from, token, phone_number_id, [])
+            res.send('No message found')
+          }
         }
 
 
