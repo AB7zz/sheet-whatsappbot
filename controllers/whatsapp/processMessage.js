@@ -223,6 +223,7 @@ async function processMessage(req, res) {
           replyMessage("Please enter your name", from, token, phone_number_id, buttons)
           step[from.replace(/\s/g, '')] = 2
         }
+        
         // If this is the 3rd message from the user, then its the student name
         else if(step[from.replace(/\s/g, '')] == 2){
           studentName = msg
