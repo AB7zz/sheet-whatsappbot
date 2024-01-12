@@ -10,6 +10,7 @@ let img_dir = path.join(process.cwd(), 'assets/');
 if (!fs.existsSync(img_dir))
   fs.mkdirSync(img_dir);
 
+
 dotenv.config()
 
 let step = {}, upiID, schoolName, studentName, academicYear, admissionNo
