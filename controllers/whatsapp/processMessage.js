@@ -144,12 +144,23 @@ async function processMessage(req, res) {
           req.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = req.body.entry[0].changes[0].value.messages[0].from;
         msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body || req.body.entry[0].changes[0].value.messages[0]?.interactive?.button_reply.title
+        
+        // If the message is neither a message nor a button reply, then it is an image. So I'm doing the following
+        /*
+        1. Get the image id from the message
+        2. Get the image url from the image id
+        3. Download the image into assets/{mobile}/UPIID.png
+        4. Extract the text from the image using a API
+        */
         if(!msg){
           msg = req.body.entry[0].changes[0].value.messages[0]?.image.id
           const imgURL = await getURL(msg)
           await downloadImg(from, imgURL)
           msg = await extractTextFromImage(from)
         }
+
+
+        // If this is the first message of the user, then its the UPI ID
         if(!step1[from.replace(/\s/g, '')]){
           upiID = msg
           const buttons = [
@@ -177,28 +188,35 @@ async function processMessage(req, res) {
           ]
           replyMessage("Please select your school", from, token, phone_number_id, buttons)
           step1[from.replace(/\s/g, '')] = 1
-        }else if (!step2[from.replace(/\s/g, '')]){
+        }
+        // If this is the 2nd message from the user, then its the school name
+        else if (!step2[from.replace(/\s/g, '')]){
           schoolName = msg
           replyMessage("Please enter your name", from, token, phone_number_id, [])
           step2[from.replace(/\s/g, '')] = 1
-        }else if(!step3[from.replace(/\s/g, '')]){
+        }
+        // If this is the 3rd message from the user, then its the student name
+        else if(!step3[from.replace(/\s/g, '')]){
           studentName = msg
           const buttons = [
             {
               type: "reply",
               reply: {
                 id: "1",
-                title: "2023-24",
+                title: "2024-25",
               }
             }
           ]
           replyMessage("Please choose your academic year", from, token, phone_number_id, buttons)
           step3[from.replace(/\s/g, '')] = 1
-        }else if(!step4[from.replace(/\s/g, '')]){
+        }
+        // If this is the 4th message from the user, then its the academic year
+        else if(!step4[from.replace(/\s/g, '')]){
           academicYear = msg
           replyMessage("Please give your admission no.", from, token, phone_number_id, [])
           step4[from.replace(/\s/g, '')] = 1
         }
+        // If this is the 5th message from the user, then its the admission no.
         else if(!step5[from.replace(/\s/g, '')]){
           admissionNo = msg
           replyMessage("Thank you, we are processing the order immediately...", from, token, phone_number_id, [])
@@ -206,11 +224,14 @@ async function processMessage(req, res) {
         }
         
         insertToSheet(upiID, schoolName, studentName, academicYear, admissionNo)
+
+        // Resetting all steps back to 0
         step1[from.replace(/\s/g, '')] = 0
         step2[from.replace(/\s/g, '')] = 0
         step3[from.replace(/\s/g, '')] = 0
         step4[from.replace(/\s/g, '')] = 0
         step5[from.replace(/\s/g, '')] = 0
+        
         res.send('Successfully added to sheet')
       }
     } else {
