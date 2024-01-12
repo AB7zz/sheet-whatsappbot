@@ -12,7 +12,7 @@ if (!fs.existsSync(img_dir))
 
 dotenv.config()
 
-let step1 = 0, step2 = 0, step3 = 0, step4 = 0, step5 = 0, upiID, studentName, admissionNo
+let step1 = [], step2 = [], step3 = [], step4 = [], step5 = [], upiID, studentName, admissionNo
 let msg
 
 async function insertToSheet(upiId, schoolName, studentName, academicYear, admissionNo){
@@ -21,7 +21,7 @@ async function insertToSheet(upiId, schoolName, studentName, academicYear, admis
 }
 
 function replyMessage(msg, from, token, phone_number_id, buttons) {
-  if((!step1) || (step1 && step2 && !step3)){
+  if((!step1[from]) || (step1[from] && step2[from] && !step3[from])){
     axios({
       method: "POST",
       url:
@@ -150,7 +150,7 @@ async function processMessage(req, res) {
           await downloadImg(imgURL)
           msg = await extractTextFromImage()
         }
-        if(!step1){
+        if(!step1[from]){
           upiID = msg
           const buttons = [
             {
@@ -176,12 +176,12 @@ async function processMessage(req, res) {
             }
           ]
           replyMessage("Please select your school", from, token, phone_number_id, buttons)
-          step1 = 1
-        }else if (!step2){
+          step1[from] = 1
+        }else if (!step2[from]){
           schoolName = msg
           replyMessage("Please enter your name", from, token, phone_number_id, [])
-          step2 = 1
-        }else if(!step3){
+          step2[from] = 1
+        }else if(!step3[from]){
           studentName = msg
           const buttons = [
             {
@@ -193,19 +193,24 @@ async function processMessage(req, res) {
             }
           ]
           replyMessage("Please choose your academic year", from, token, phone_number_id, buttons)
-          step3 = 1
-        }else if(!step4){
+          step3[from] = 1
+        }else if(!step4[from]){
           academicYear = msg
           replyMessage("Please give your admission no.", from, token, phone_number_id, [])
-          step4 = 1
+          step4[from] = 1
         }
-        else if(!step5){
+        else if(!step5[from]){
           admissionNo = msg
           replyMessage("Thank you, we are processing the order immediately...", from, token, phone_number_id, [])
-          step5 = 1
+          step5[from] = 1
         }
         
         insertToSheet(upiID, schoolName, studentName, academicYear, admissionNo)
+        step1[from] = 0
+        step2[from] = 0
+        step3[from] = 0
+        step4[from] = 0
+        step5[from] = 0
         res.send('Successfully added to sheet')
       }
     } else {
