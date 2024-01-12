@@ -193,7 +193,7 @@ async function processMessage(req, res) {
         let phone_number_id =
           req.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = req.body.entry[0].changes[0].value.messages[0].from;
-        msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body || req.body.entry[0].changes[0].value.messages[0]?.interactive?.button_reply.title
+        msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body || req.body.entry[0].changes[0].value.messages[0]?.interactive?.button_reply.title || req.body.entry[0].changes[0].value.messages[0]?.interactive?.list_reply.title
         
         // If the message is neither a message nor a button reply, then it is an image. So I'm doing the following
         /*
