@@ -42,7 +42,7 @@ function replyMessage(msg, from, token, phone_number_id, content) {
             text: msg
           },
           body: {
-            text: ""
+            text: "Please select your school"
           },
           action: {
             button: "SELECT",
