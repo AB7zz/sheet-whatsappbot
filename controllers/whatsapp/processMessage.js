@@ -124,7 +124,10 @@ async function extractTextFromImage(from){
       }
     })
     const sentence = textReq.data.map(item => item.text).join(' ')
-    return sentence
+    const regex = /UPI transaction ID: (\d+)/;
+    const match = regex.exec(sentence);
+    const upiTransactionId = match ? match[1] : null;
+    return upiTransactionId
   } catch (error) {
     console.log(error)
     return 'Some error occurred!'
