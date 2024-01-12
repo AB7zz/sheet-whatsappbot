@@ -122,11 +122,18 @@ async function extractTextFromImage(from){
         'X-Api-Key': process.env.IMAGE_TO_TEXT_API_KEY,
       }
     })
-    const sentence = textReq.data.map(item => item.text).join(' ')
-    const regex = /UPI transaction ID: (\d+)/;
-    const match = regex.exec(sentence);
-    const upiTransactionId = match ? match[1] : null;
-    return sentence
+    let sentence = textReq.data.map(item => item.text).join(' ')
+    let regex = /UPI transaction ID: (\d+)/;
+    let match = regex.exec(sentence);
+    let upiTransactionId = match ? match[1] : null;
+    if(upiTransactionId == null){
+      regex = /UPI transaction ID (\d+)/;
+
+      match = regex.exec(sentence);
+      
+      upiTransactionId = match ? match[1] : null;
+    }
+    return upiTransactionId
   } catch (error) {
     console.log(error)
     return 'Some error occurred!'
