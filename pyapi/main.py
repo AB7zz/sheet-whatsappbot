@@ -24,12 +24,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/text")
-def imageToText(my_file: UploadFile = File(...)):
-    print(my_file.filename)
-    file_location = f"images/{my_file.filename}"
+@app.post("/imagetotext")
+def imageToText(image: UploadFile = File(...)):
+    print(image.filename)
+    file_location = f"images/{image.filename}"
     with open(file_location, "wb") as file_object:
-        file_object.write(my_file.file.read())
+        file_object.write(image.file.read())
 
     image = cv2.imread(file_location)
 
