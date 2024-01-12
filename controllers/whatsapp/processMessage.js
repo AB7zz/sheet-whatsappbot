@@ -68,31 +68,6 @@ function replyMessage(msg, from, token, phone_number_id, buttons) {
 }
 
 
-async function extractTextFromImage(from){
-  try {
-    console.log('------EXTARCTING TEXT FROM IMAGE------')
-    form.append('image', fs.readFileSync(imgpath));
-    const form = new FormData()
-    let img
-    let filepath = path.join(process.cwd(),`assets/${from.replace(/\s/g, '')}/UPIID.png`);
-    fs.readFile('assets/UPIID.png', (data) => {
-      img = data
-    })
-    form.append('image', fs.readFileSync(filepath));
-    const textReq = await axios.post('https://api.api-ninjas.com/v1/imagetotext', form, {
-      headers: {
-        'X-Api-Key': process.env.IMAGE_TO_TEXT_API_KEY,
-      }
-    })
-    const sentence = textReq.data.map(item => item.text).join(' ')
-    return sentence
-  } catch (error) {
-    console.log(error)
-    return 'Some error occurred!'
-  }
-}
-
-
 async function getURL(msg){
   try {
     console.log('------FETCHING IMAGE URL------')
@@ -128,6 +103,31 @@ async function downloadImg(from, imgURL){
   }
 }
 
+
+async function extractTextFromImage(from){
+  try {
+    console.log('------EXTARCTING TEXT FROM IMAGE------')
+    const form = new FormData()
+    let img
+    let filepath = path.join(process.cwd(),`assets/${from.replace(/\s/g, '')}/UPIID.png`);
+    fs.readFile('assets/UPIID.png', (data) => {
+      img = data
+    })
+    form.append('image', fs.readFileSync(filepath));
+    const textReq = await axios.post('https://api.api-ninjas.com/v1/imagetotext', form, {
+      headers: {
+        'X-Api-Key': process.env.IMAGE_TO_TEXT_API_KEY,
+      }
+    })
+    const sentence = textReq.data.map(item => item.text).join(' ')
+    return sentence
+  } catch (error) {
+    console.log(error)
+    return 'Some error occurred!'
+  }
+}
+
+
 async function processMessage(req, res) {
   try{
     const token = process.env.WHATSAPP_TOKEN
@@ -152,8 +152,11 @@ async function processMessage(req, res) {
         3. Download the image into assets/{mobile}/UPIID.png
         4. Extract the text from the image using a API
         */
-        if(!msg){
+        if(!msg || msg.length == 0){
           msg = req.body.entry[0].changes[0].value.messages[0]?.image.id
+          if(!msg || msg.length == 0){
+            res.send('No message found')
+          }
           const imgURL = await getURL(msg)
           await downloadImg(from, imgURL)
           msg = await extractTextFromImage(from)
