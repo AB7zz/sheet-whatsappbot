@@ -113,29 +113,6 @@ async function testMessage(req, res) {
     const sentence = textReq.data.map(item => item.text).join(' ')
     console.log(sentence)
     res.send('lol')
-    // const token = process.env.WHATSAPP_TOKEN
-    // if (req.body.object) {
-    //   if (
-    //     req.body.entry &&
-    //     req.body.entry[0].changes &&
-    //     req.body.entry[0].changes[0] &&
-    //     req.body.entry[0].changes[0].value.messages &&
-    //     req.body.entry[0].changes[0].value.messages[0]
-    //   ) 
-    //   {
-    //     let phone_number_id =
-    //       req.body.entry[0].changes[0].value.metadata.phone_number_id;
-    //     let from = req.body.entry[0].changes[0].value.messages[0].from;
-    //     let msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body || req.body.entry[0].changes[0].value.messages[0]?.interactive?.button_reply.title;
-    //     console.log(req.body.entry[0].changes[0].value.messages[0])
-    //     let reply = generateReply(msg)
-    //     replyMessage(reply, from, token, phone_number_id)
-    //     insertToSheet(msg)
-    //     res.send('Successfully added to sheet')
-    //   }
-    // } else {
-    //   res.sendStatus(404);
-    // }
   } catch (err) {
     throw err;
   }

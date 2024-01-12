@@ -2,22 +2,26 @@ import dotenv from 'dotenv'
 import doc from '../../config/index.js';
 import axios from 'axios'
 import fs from 'fs'
+import FormData from 'form-data'
 import path from 'path'
+
+let img_dir = path.join(process.cwd(), 'assets/');
+
+if (!fs.existsSync(img_dir))
+  fs.mkdirSync(img_dir);
 
 dotenv.config()
 
-let btnReply = 0
-let analyzeImg = 0
-let analyzeText = 0
+let step1 = 0, step2 = 0, step3 = 0, step4 = 0, step5 = 0, upiID, studentName, admissionNo
 let msg
 
-async function insertToSheet(msg){
-  const sheet = doc.sheetsByTitle['Sheet1'];
-  await sheet.addRow({ msg });
+async function insertToSheet(upiId, schoolName, studentName, academicYear, admissionNo){
+  const sheet = doc.sheetsByTitle['Sheet2'];
+  await sheet.addRow({ UPI_ID: upiId, School_Name: schoolName, Student_Name: studentName, Academic_Year: academicYear, Admission_No: admissionNo });
 }
 
-function replyMessage(msg, from, token, phone_number_id) {
-  if(btnReply){
+function replyMessage(msg, from, token, phone_number_id, buttons) {
+  if((!step1) || (step1 && step2 && !step3)){
     axios({
       method: "POST",
       url:
@@ -35,28 +39,14 @@ function replyMessage(msg, from, token, phone_number_id) {
             text: msg,
           },
           action: {
-            buttons: [
-              {
-                type: "reply",
-                reply: {
-                  id: "1",
-                  title: "Analyze message",
-                }
-              },
-              {
-                type: "reply",
-                reply: {
-                  id: "2",
-                  title: "Analyze image",
-                }
-              }
-            ]
+            buttons: buttons
           }
         }
       },
       headers: { "Content-Type": "application/json" },
     });
-  }else{
+  }
+  else{
     axios({
       method: "POST",
       url:
@@ -77,43 +67,31 @@ function replyMessage(msg, from, token, phone_number_id) {
   }
 }
 
-function generateReply(msg){
-  let reply = "Sorry! I didn't get that. Please try again."
-  if(msg.toLowerCase().includes('hello') || msg.toLowerCase().includes('hi')){
-    reply = "Hello! Choose any one of the following options to proceed further."
-    btnReply = 1
-  }else if(msg == 'Analyze message'){
-    reply = 'Okay! Please send the message you want to analyze.'
-    analyzeText = 1
-    btnReply = 0
-  }else if(msg == 'Analyze image'){
-    reply = 'Okay! Please send the image you want to analyze.'
-    analyzeImg = 1
-    btnReply = 0
-  }
-  return reply
-}
-
 
 async function extractTextFromImage(){
   try {
     console.log('------EXTARCTING TEXT FROM IMAGE------')
-    let imgpath = path.join(process.cwd(),'assets/test.png');
-    const form = new FormData()
     form.append('image', fs.readFileSync(imgpath));
+    const form = new FormData()
+    let img
+    let filepath = path.join(process.cwd(),'assets/UPIID.png');
+    fs.readFile('assets/UPIID.png', (data) => {
+      img = data
+    })
+    form.append('image', fs.readFileSync(filepath));
     const textReq = await axios.post('https://api.api-ninjas.com/v1/imagetotext', form, {
       headers: {
         'X-Api-Key': process.env.IMAGE_TO_TEXT_API_KEY,
       }
     })
     const sentence = textReq.data.map(item => item.text).join(' ')
-    console.log(sentence)
     return sentence
   } catch (error) {
     console.log(error)
     return 'Some error occurred!'
   }
 }
+
 
 async function getURL(msg){
   try {
@@ -141,7 +119,7 @@ async function downloadImg(imgURL){
     });
   
     await new Promise((resolve, reject) => {
-      response.data.pipe(fs.createWriteStream('assets/test.png'))
+      response.data.pipe(fs.createWriteStream('assets/UPIID.png'))
         .on('finish', resolve)
         .on('error', reject);
     });
@@ -165,24 +143,69 @@ async function processMessage(req, res) {
         let phone_number_id =
           req.body.entry[0].changes[0].value.metadata.phone_number_id;
         let from = req.body.entry[0].changes[0].value.messages[0].from;
-        msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body || req.body.entry[0].changes[0].value.messages[0]?.interactive?.button_reply.title || req.body.entry[0].changes[0].value.messages[0]?.image.id;
-        console.log(msg)
-        let reply 
-        if(analyzeImg){
-          let imgURL = await getURL(msg)
+        msg = req.body.entry[0].changes[0].value.messages[0]?.text?.body || req.body.entry[0].changes[0].value.messages[0]?.interactive?.button_reply.title
+        if(!msg){
+          msg = req.body.entry[0].changes[0].value.messages[0]?.image.id
+          const imgURL = await getURL(msg)
           await downloadImg(imgURL)
           msg = await extractTextFromImage()
-          reply = 'Image analyzed and inserted into sheet!'
-          analyzeImg = 0
-        }else if(analyzeText){
-          reply = 'Text analyzed and inserted into sheet!'
-          analyzeText = 0
-        }else{
-          reply = generateReply(msg)
         }
-        replyMessage(reply, from, token, phone_number_id)
-        console.log(msg)
-        // insertToSheet(msg)
+        if(!step1){
+          upiID = msg
+          const buttons = [
+            {
+              type: "reply",
+              reply: {
+                id: "1",
+                title: "School A",
+              }
+            },
+            {
+              type: "reply",
+              reply: {
+                id: "2",
+                title: "School B",
+              }
+            },
+            {
+              type: "reply",
+              reply: {
+                id: "3",
+                title: "School C",
+              }
+            }
+          ]
+          replyMessage("Please select your school", from, token, phone_number_id, buttons)
+          step1 = 1
+        }else if (!step2){
+          schoolName = msg
+          replyMessage("Please enter your name", from, token, phone_number_id, [])
+          step2 = 1
+        }else if(!step3){
+          studentName = msg
+          const buttons = [
+            {
+              type: "reply",
+              reply: {
+                id: "1",
+                title: "2023-24",
+              }
+            }
+          ]
+          replyMessage("Please choose your academic year", from, token, phone_number_id, buttons)
+          step3 = 1
+        }else if(!step4){
+          academicYear = msg
+          replyMessage("Please give your admission no.", from, token, phone_number_id, [])
+          step4 = 1
+        }
+        else if(!step5){
+          admissionNo = msg
+          replyMessage("Thank you, we are processing the order immediately...", from, token, phone_number_id, [])
+          step5 = 1
+        }
+        
+        insertToSheet(upiID, schoolName, studentName, academicYear, admissionNo)
         res.send('Successfully added to sheet')
       }
     } else {

@@ -2,11 +2,12 @@ from typing import Union
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 import cv2
+import uvicorn
 
 import pytesseract
 
-# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\tesseract\tesseract.exe'
-pytesseract.pytesseract.tesseract_cmd = '/app/.apt/usr/bin/tesseract'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\tesseract\tesseract.exe'
+# pytesseract.pytesseract.tesseract_cmd = '/app/.apt/usr/bin/tesseract'
 
 app = FastAPI()
 
@@ -35,3 +36,7 @@ def imageToText(my_file: UploadFile = File(...)):
     image_text = pytesseract.image_to_string(image)
     print(image_text)
     return {image_text}
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app",port=8082,host="localhost",reload=True)
