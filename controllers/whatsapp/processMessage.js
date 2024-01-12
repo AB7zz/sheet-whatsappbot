@@ -21,7 +21,7 @@ async function insertToSheet(upiId, schoolName, studentName, academicYear, admis
 }
 
 function replyMessage(msg, from, token, phone_number_id, buttons) {
-  if((!step1[from]) || (step1[from] && step2[from] && !step3[from])){
+  if((!step1[from.replace(/\s/g, '')]) || (step1[from.replace(/\s/g, '')] && step2[from.replace(/\s/g, '')] && !step3[from.replace(/\s/g, '')])){
     axios({
       method: "POST",
       url:
@@ -68,13 +68,13 @@ function replyMessage(msg, from, token, phone_number_id, buttons) {
 }
 
 
-async function extractTextFromImage(){
+async function extractTextFromImage(from){
   try {
     console.log('------EXTARCTING TEXT FROM IMAGE------')
     form.append('image', fs.readFileSync(imgpath));
     const form = new FormData()
     let img
-    let filepath = path.join(process.cwd(),'assets/UPIID.png');
+    let filepath = path.join(process.cwd(),`assets/${from.replace(/\s/g, '')}/UPIID.png`);
     fs.readFile('assets/UPIID.png', (data) => {
       img = data
     })
@@ -108,7 +108,7 @@ async function getURL(msg){
   }
 }
 
-async function downloadImg(imgURL){
+async function downloadImg(from, imgURL){
   try{
     console.log('------DOWNLAODING IMAGE------')
     const response = await axios.get(imgURL, {
@@ -119,7 +119,7 @@ async function downloadImg(imgURL){
     });
   
     await new Promise((resolve, reject) => {
-      response.data.pipe(fs.createWriteStream('assets/UPIID.png'))
+      response.data.pipe(fs.createWriteStream(`assets/${from.replace(/\s/g, '')}/UPIID.png`))
         .on('finish', resolve)
         .on('error', reject);
     });
@@ -147,10 +147,10 @@ async function processMessage(req, res) {
         if(!msg){
           msg = req.body.entry[0].changes[0].value.messages[0]?.image.id
           const imgURL = await getURL(msg)
-          await downloadImg(imgURL)
-          msg = await extractTextFromImage()
+          await downloadImg(from, imgURL)
+          msg = await extractTextFromImage(from)
         }
-        if(!step1[from]){
+        if(!step1[from.replace(/\s/g, '')]){
           upiID = msg
           const buttons = [
             {
@@ -176,12 +176,12 @@ async function processMessage(req, res) {
             }
           ]
           replyMessage("Please select your school", from, token, phone_number_id, buttons)
-          step1[from] = 1
-        }else if (!step2[from]){
+          step1[from.replace(/\s/g, '')] = 1
+        }else if (!step2[from.replace(/\s/g, '')]){
           schoolName = msg
           replyMessage("Please enter your name", from, token, phone_number_id, [])
-          step2[from] = 1
-        }else if(!step3[from]){
+          step2[from.replace(/\s/g, '')] = 1
+        }else if(!step3[from.replace(/\s/g, '')]){
           studentName = msg
           const buttons = [
             {
@@ -193,24 +193,24 @@ async function processMessage(req, res) {
             }
           ]
           replyMessage("Please choose your academic year", from, token, phone_number_id, buttons)
-          step3[from] = 1
-        }else if(!step4[from]){
+          step3[from.replace(/\s/g, '')] = 1
+        }else if(!step4[from.replace(/\s/g, '')]){
           academicYear = msg
           replyMessage("Please give your admission no.", from, token, phone_number_id, [])
-          step4[from] = 1
+          step4[from.replace(/\s/g, '')] = 1
         }
-        else if(!step5[from]){
+        else if(!step5[from.replace(/\s/g, '')]){
           admissionNo = msg
           replyMessage("Thank you, we are processing the order immediately...", from, token, phone_number_id, [])
-          step5[from] = 1
+          step5[from.replace(/\s/g, '')] = 1
         }
         
         insertToSheet(upiID, schoolName, studentName, academicYear, admissionNo)
-        step1[from] = 0
-        step2[from] = 0
-        step3[from] = 0
-        step4[from] = 0
-        step5[from] = 0
+        step1[from.replace(/\s/g, '')] = 0
+        step2[from.replace(/\s/g, '')] = 0
+        step3[from.replace(/\s/g, '')] = 0
+        step4[from.replace(/\s/g, '')] = 0
+        step5[from.replace(/\s/g, '')] = 0
         res.send('Successfully added to sheet')
       }
     } else {
