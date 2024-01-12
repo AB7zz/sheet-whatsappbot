@@ -35,12 +35,33 @@ function replyMessage(msg, from, token, phone_number_id, buttons) {
         to: from,
         type: "interactive",
         interactive:{
-          type: "button",
+          type: "list",
           body: {
             text: msg,
           },
           action: {
-            buttons: buttons
+            sections:[
+              {
+                title:"your-section-title-content",
+                rows: [
+                  {
+                    id:"unique-row-identifier",
+                    title: "row-title-content",
+                    description: "row-description-content",           
+                  }
+                ]
+              },
+              {
+                title:"your-section-title-content",
+                rows: [
+                  {
+                    id:"unique-row-identifier",
+                    title: "row-title-content",
+                    description: "row-description-content",           
+                  }
+                ]
+              }
+            ]
           }
         }
       },
