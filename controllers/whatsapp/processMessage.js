@@ -4,6 +4,7 @@ import axios from 'axios'
 import fs from 'fs'
 import FormData from 'form-data'
 import path from 'path'
+import e from 'express';
 
 let img_dir = path.join(process.cwd(), 'assets/');
 
@@ -21,8 +22,8 @@ async function insertToSheet(upiId, schoolName, studentName, academicYear, admis
   await sheet.addRow({ UPI_ID: upiId, School_Name: schoolName, Student_Name: studentName, Academic_Year: academicYear, Admission_No: admissionNo });
 }
 
-function replyMessage(msg, from, token, phone_number_id, buttons) {
-  if (buttons && buttons.length > 0){
+function replyMessage(msg, from, token, phone_number_id, content) {
+  if ((step[from.replace(/\s/g, '')] == 0 || !step[from.replace(/\s/g, '')]) && content && content.length > 0){
     axios({
       method: "POST",
       url:
@@ -38,34 +39,42 @@ function replyMessage(msg, from, token, phone_number_id, buttons) {
           type: "list",
           header: {
             type: "text",
-            text: "your-header-content"
-          },
-          body: {
-            text: "your-text-message-content"
-          },
-          footer: {
-            text: "your-footer-content"
+            text: msg
           },
           action: {
-            button: "OK",
-            sections:[
-              {
-                title:"Title",
-                rows: [
-                  {
-                    id:"1",
-                    title: "title",
-                    description: "row-description-content",           
-                  }
-                ]
-              }
-            ]
+            button: "SELECT",
+            sections: content
           }
         }
       },
       headers: { "Content-Type": "application/json" },
     });
-  }else{
+  }else if(step[from.replace(/\s/g, '')] != 0 && content && content.length > 0){
+    axios({
+      method: "POST",
+      url:
+        "https://graph.facebook.com/v12.0/" +
+        phone_number_id +
+        "/messages?access_token=" +
+        token,
+      data: {
+        messaging_product: "whatsapp",
+        to: from,
+        type: "interactive",
+        interactive:{
+          type: "button",
+          body: {
+            text: msg,
+          },
+          action: {
+            buttons: content
+          }
+        }
+      },
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  else{
     axios({
       method: "POST",
       url:
@@ -223,30 +232,30 @@ async function processMessage(req, res) {
 
         if(!step[from.replace(/\s/g, '')] || step[from.replace(/\s/g, '')] == 0){
           if (msg !== "Go Back") upiID = msg
-          const buttons = [
+          const sections = [
             {
-              type: "reply",
-              reply: {
-                id: "1",
-                title: "School A",
-              }
-            },
-            {
-              type: "reply",
-              reply: {
-                id: "2",
-                title: "School B",
-              }
-            },
-            {
-              type: "reply",
-              reply: {
-                id: "3",
-                title: "School C",
-              }
+              title:"Title",
+              rows: [
+                {
+                  id:"1",
+                  title: "School A",        
+                },
+                {
+                  id:"1",
+                  title: "School B",        
+                },
+                {
+                  id:"1",
+                  title: "School C",        
+                },
+                {
+                  id:"1",
+                  title: "School D",        
+                }
+              ]
             }
           ]
-          replyMessage("Please select your school", from, token, phone_number_id, buttons)
+          replyMessage("Please select your school", from, token, phone_number_id, sections)
           step[from.replace(/\s/g, '')] = 1
         }
         // If this is the 2nd message from the user, then its the school name
