@@ -176,106 +176,103 @@ async function processMessage(req, res) {
 
         if(msg === "Go Back"){
           step[from.replace(/\s/g, '')] -= 2
-          res.send('Successfully gone back')
-        }else{
-
-          if(!step[from.replace(/\s/g, '')] || step[from.replace(/\s/g, '')] == 0){
-            upiID = msg
-            const buttons = [
-              {
-                type: "reply",
-                reply: {
-                  id: "1",
-                  title: "School A",
-                }
-              },
-              {
-                type: "reply",
-                reply: {
-                  id: "2",
-                  title: "School B",
-                }
-              },
-              {
-                type: "reply",
-                reply: {
-                  id: "3",
-                  title: "School C",
-                }
-              }
-            ]
-            replyMessage("Please select your school", from, token, phone_number_id, buttons)
-            step[from.replace(/\s/g, '')] = 1
-          }
-          // If this is the 2nd message from the user, then its the school name
-          else if (step[from.replace(/\s/g, '')] == 1){
-            schoolName = msg
-            const buttons = [
-              {
-                type: "reply",
-                reply: {
-                  id: "1",
-                  title: "Go Back",
-                }
-              }
-            ]
-            replyMessage("Please enter your name", from, token, phone_number_id, buttons)
-            step[from.replace(/\s/g, '')] = 2
-          }
-          
-          // If this is the 3rd message from the user, then its the student name
-          else if(step[from.replace(/\s/g, '')] == 2){
-            studentName = msg
-            const buttons = [
-              {
-                type: "reply",
-                reply: {
-                  id: "1",
-                  title: "2024-25",
-                }
-              },
-              {
-                type: "reply",
-                reply: {
-                  id: "2",
-                  title: "Go Back",
-                }
-              }
-            ]
-            replyMessage("Please choose your academic year", from, token, phone_number_id, buttons)
-            step[from.replace(/\s/g, '')] = 3
-          }
-          // If this is the 4th message from the user, then its the academic year
-          else if(step[from.replace(/\s/g, '')] == 3){
-            academicYear = msg
-            const buttons = [
-              {
-                type: "reply",
-                reply: {
-                  id: "1",
-                  title: "Go Back",
-                }
-              }
-            ]
-            replyMessage("Please give your admission no.", from, token, phone_number_id, buttons)
-            step[from.replace(/\s/g, '')] = 4
-          }
-          // If this is the 5th message from the user, then its the admission no.
-          else if(step[from.replace(/\s/g, '')] == 4){
-            admissionNo = msg
-            const buttons = []
-            replyMessage("Thank you, we are processing the order immediately...", from, token, phone_number_id, buttons)
-            step[from.replace(/\s/g, '')] = 5
-          }
-          
-          if(step[from.replace(/\s/g, '')] == 5){
-            insertToSheet(upiID, schoolName, studentName, academicYear, admissionNo)
-    
-            // Resetting all step back to 0
-            step[from.replace(/\s/g, '')] = 0
-          }
-          res.send('Successfully added to sheet')
         }
+        if(!step[from.replace(/\s/g, '')] || step[from.replace(/\s/g, '')] == 0){
+          if (msg !== "Go Back") upiID = msg
+          const buttons = [
+            {
+              type: "reply",
+              reply: {
+                id: "1",
+                title: "School A",
+              }
+            },
+            {
+              type: "reply",
+              reply: {
+                id: "2",
+                title: "School B",
+              }
+            },
+            {
+              type: "reply",
+              reply: {
+                id: "3",
+                title: "School C",
+              }
+            }
+          ]
+          replyMessage("Please select your school", from, token, phone_number_id, buttons)
+          step[from.replace(/\s/g, '')] = 1
+        }
+        // If this is the 2nd message from the user, then its the school name
+        else if (step[from.replace(/\s/g, '')] == 1){
+          if (msg !== "Go Back") schoolName = msg
+          const buttons = [
+            {
+              type: "reply",
+              reply: {
+                id: "1",
+                title: "Go Back",
+              }
+            }
+          ]
+          replyMessage("Please enter your name", from, token, phone_number_id, buttons)
+          step[from.replace(/\s/g, '')] = 2
+        }
+        
+        // If this is the 3rd message from the user, then its the student name
+        else if(step[from.replace(/\s/g, '')] == 2){
+          if (msg !== "Go Back") studentName = msg
+          const buttons = [
+            {
+              type: "reply",
+              reply: {
+                id: "1",
+                title: "2024-25",
+              }
+            },
+            {
+              type: "reply",
+              reply: {
+                id: "2",
+                title: "Go Back",
+              }
+            }
+          ]
+          replyMessage("Please choose your academic year", from, token, phone_number_id, buttons)
+          step[from.replace(/\s/g, '')] = 3
+        }
+        // If this is the 4th message from the user, then its the academic year
+        else if(step[from.replace(/\s/g, '')] == 3){
+          if (msg !== "Go Back") academicYear = msg
+          const buttons = [
+            {
+              type: "reply",
+              reply: {
+                id: "1",
+                title: "Go Back",
+              }
+            }
+          ]
+          replyMessage("Please give your admission no.", from, token, phone_number_id, buttons)
+          step[from.replace(/\s/g, '')] = 4
+        }
+        // If this is the 5th message from the user, then its the admission no.
+        else if(step[from.replace(/\s/g, '')] == 4){
+          if (msg !== "Go Back") admissionNo = msg
+          const buttons = []
+          replyMessage("Thank you, we are processing the order immediately...", from, token, phone_number_id, buttons)
+          step[from.replace(/\s/g, '')] = 5
+        }
+        
+        if(step[from.replace(/\s/g, '')] == 5){
+          insertToSheet(upiID, schoolName, studentName, academicYear, admissionNo)
+  
+          // Resetting all step back to 0
+          step[from.replace(/\s/g, '')] = 0
+        }
+        res.send('Successfully added to sheet')
       }else{
         res.sendStatus(404)
       }
