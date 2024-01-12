@@ -244,15 +244,15 @@ async function processMessage(req, res) {
                   title: "School A",        
                 },
                 {
-                  id:"1",
+                  id:"2",
                   title: "School B",        
                 },
                 {
-                  id:"1",
+                  id:"3",
                   title: "School C",        
                 },
                 {
-                  id:"1",
+                  id:"4",
                   title: "School D",        
                 }
               ]
