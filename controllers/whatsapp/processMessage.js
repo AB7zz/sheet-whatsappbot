@@ -176,6 +176,7 @@ async function processMessage(req, res) {
 
         if(msg === "Go Back"){
           step[from.replace(/\s/g, '')] -= 2
+          res.send('Successfully gone back')
         }
 
         // If this is the first message of the user, then its the UPI ID
