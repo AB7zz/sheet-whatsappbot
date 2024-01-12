@@ -123,9 +123,15 @@ async function extractTextFromImage(from){
       }
     })
     let sentence = textReq.data.map(item => item.text).join(' ')
+
+    //there are 2 types of screenshots a user can take. Im using regex to extract the UPI ID for both cases.
+
+    // Case 1
     let regex = /UPI transaction ID: (\d+)/;
     let match = regex.exec(sentence);
     let upiTransactionId = match ? match[1] : null;
+
+    // Case 2
     if(upiTransactionId == null){
       regex = /UPI transaction ID (\d+)/;
 
@@ -181,9 +187,12 @@ async function processMessage(req, res) {
           step[from.replace(/\s/g, '')] = 0
         }
 
+        // I'm doing -2 because of the way I coded the logic for this. It actually just goes to the previous step. I hope it's not confusing
         if(msg === "Go Back"){
           step[from.replace(/\s/g, '')] -= 2
         }
+
+
         if(!step[from.replace(/\s/g, '')] || step[from.replace(/\s/g, '')] == 0){
           if (msg !== "Go Back") upiID = msg
           const buttons = [
