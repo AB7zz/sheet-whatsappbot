@@ -190,13 +190,13 @@ async function processMessage(req, res) {
           step1[from.replace(/\s/g, '')] = 1
         }
         // If this is the 2nd message from the user, then its the school name
-        else if (!step2[from.replace(/\s/g, '')]){
+        else if (step1[from.replace(/\s/g, '')] == 1 && !step2[from.replace(/\s/g, '')]){
           schoolName = msg
           replyMessage("Please enter your name", from, token, phone_number_id, [])
           step2[from.replace(/\s/g, '')] = 1
         }
         // If this is the 3rd message from the user, then its the student name
-        else if(!step3[from.replace(/\s/g, '')]){
+        else if(step2[from.replace(/\s/g, '')] == 1 && !step3[from.replace(/\s/g, '')]){
           studentName = msg
           const buttons = [
             {
@@ -211,13 +211,13 @@ async function processMessage(req, res) {
           step3[from.replace(/\s/g, '')] = 1
         }
         // If this is the 4th message from the user, then its the academic year
-        else if(!step4[from.replace(/\s/g, '')]){
+        else if(step3[from.replace(/\s/g, '')] == 1 && !step4[from.replace(/\s/g, '')]){
           academicYear = msg
           replyMessage("Please give your admission no.", from, token, phone_number_id, [])
           step4[from.replace(/\s/g, '')] = 1
         }
         // If this is the 5th message from the user, then its the admission no.
-        else if(!step5[from.replace(/\s/g, '')]){
+        else if(step4[from.replace(/\s/g, '')] == 1 && !step5[from.replace(/\s/g, '')]){
           admissionNo = msg
           replyMessage("Thank you, we are processing the order immediately...", from, token, phone_number_id, [])
           step5[from.replace(/\s/g, '')] = 1
