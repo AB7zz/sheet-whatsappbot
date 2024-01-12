@@ -12,7 +12,7 @@ if (!fs.existsSync(img_dir))
 
 dotenv.config()
 
-let step1 = [], step2 = [], step3 = [], step4 = [], step5 = [], upiID, schoolName, studentName, academicYear, admissionNo
+let step = {}, upiID, schoolName, studentName, academicYear, admissionNo
 let msg
 
 async function insertToSheet(upiId, schoolName, studentName, academicYear, admissionNo){
@@ -21,50 +21,29 @@ async function insertToSheet(upiId, schoolName, studentName, academicYear, admis
 }
 
 function replyMessage(msg, from, token, phone_number_id, buttons) {
-  if((!step1[from.replace(/\s/g, '')]) || (step1[from.replace(/\s/g, '')] && step2[from.replace(/\s/g, '')] && !step3[from.replace(/\s/g, '')])){
-    axios({
-      method: "POST",
-      url:
-        "https://graph.facebook.com/v12.0/" +
-        phone_number_id +
-        "/messages?access_token=" +
-        token,
-      data: {
-        messaging_product: "whatsapp",
-        to: from,
-        type: "interactive",
-        interactive:{
-          type: "button",
-          body: {
-            text: msg,
-          },
-          action: {
-            buttons: buttons
-          }
+  axios({
+    method: "POST",
+    url:
+      "https://graph.facebook.com/v12.0/" +
+      phone_number_id +
+      "/messages?access_token=" +
+      token,
+    data: {
+      messaging_product: "whatsapp",
+      to: from,
+      type: "interactive",
+      interactive:{
+        type: "button",
+        body: {
+          text: msg,
+        },
+        action: {
+          buttons: buttons
         }
-      },
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-  else{
-    axios({
-      method: "POST",
-      url:
-        "https://graph.facebook.com/v12.0/" +
-        phone_number_id +
-        "/messages?access_token=" +
-        token,
-      data: {
-        messaging_product: "whatsapp",
-        to: from,
-        text:{
-          body: msg
-        }
-      },
-      headers: { "Content-Type": "application/json" },
-    });
-
-  }
+      }
+    },
+    headers: { "Content-Type": "application/json" },
+  });
 }
 
 
@@ -174,9 +153,12 @@ async function processMessage(req, res) {
           }
         }
 
+        if(msg === "Go Back"){
+          step[from.replace(/\s/g, '')] -= 2
+        }
 
         // If this is the first message of the user, then its the UPI ID
-        if(!step1[from.replace(/\s/g, '')]){
+        if(!step[from.replace(/\s/g, '')] || step[from.replace(/\s/g, '')] == 0){
           upiID = msg
           const buttons = [
             {
@@ -202,16 +184,25 @@ async function processMessage(req, res) {
             }
           ]
           replyMessage("Please select your school", from, token, phone_number_id, buttons)
-          step1[from.replace(/\s/g, '')] = 1
+          step[from.replace(/\s/g, '')] = 1
         }
         // If this is the 2nd message from the user, then its the school name
-        else if (step1[from.replace(/\s/g, '')] == 1 && !step2[from.replace(/\s/g, '')]){
+        else if (step[from.replace(/\s/g, '')] == 1){
           schoolName = msg
-          replyMessage("Please enter your name", from, token, phone_number_id, [])
-          step2[from.replace(/\s/g, '')] = 1
+          const buttons = [
+            {
+              type: "reply",
+              reply: {
+                id: "1",
+                title: "Go Back",
+              }
+            }
+          ]
+          replyMessage("Please enter your name", from, token, phone_number_id, buttons)
+          step[from.replace(/\s/g, '')] = 2
         }
         // If this is the 3rd message from the user, then its the student name
-        else if(step2[from.replace(/\s/g, '')] == 1 && !step3[from.replace(/\s/g, '')]){
+        else if(step[from.replace(/\s/g, '')] == 2){
           studentName = msg
           const buttons = [
             {
@@ -220,33 +211,54 @@ async function processMessage(req, res) {
                 id: "1",
                 title: "2024-25",
               }
+            },
+            {
+              type: "reply",
+              reply: {
+                id: "2",
+                title: "Go Back",
+              }
             }
           ]
           replyMessage("Please choose your academic year", from, token, phone_number_id, buttons)
-          step3[from.replace(/\s/g, '')] = 1
+          step[from.replace(/\s/g, '')] = 3
         }
         // If this is the 4th message from the user, then its the academic year
-        else if(step3[from.replace(/\s/g, '')] == 1 && !step4[from.replace(/\s/g, '')]){
+        else if(step[from.replace(/\s/g, '')] == 3){
           academicYear = msg
-          replyMessage("Please give your admission no.", from, token, phone_number_id, [])
-          step4[from.replace(/\s/g, '')] = 1
+          const buttons = [
+            {
+              type: "reply",
+              reply: {
+                id: "1",
+                title: "Go Back",
+              }
+            }
+          ]
+          replyMessage("Please give your admission no.", from, token, phone_number_id, buttons)
+          step[from.replace(/\s/g, '')] = 4
         }
         // If this is the 5th message from the user, then its the admission no.
-        else if(step4[from.replace(/\s/g, '')] == 1 && !step5[from.replace(/\s/g, '')]){
+        else if(step[from.replace(/\s/g, '')] == 4){
           admissionNo = msg
-          replyMessage("Thank you, we are processing the order immediately...", from, token, phone_number_id, [])
-          step5[from.replace(/\s/g, '')] = 1
+          const buttons = [
+            {
+              type: "reply",
+              reply: {
+                id: "1",
+                title: "Go Back",
+              }
+            }
+          ]
+          replyMessage("Thank you, we are processing the order immediately...", from, token, phone_number_id, buttons)
+          step[from.replace(/\s/g, '')] = 5
         }
         
-        if(step1[from.replace(/\s/g, '')] == 1 && step2[from.replace(/\s/g, '')] == 1 && step3[from.replace(/\s/g, '')] == 1 && step4[from.replace(/\s/g, '')] == 1 && step5[from.replace(/\s/g, '')] == 1){
+        if(step[from.replace(/\s/g, '')] == 5){
           insertToSheet(upiID, schoolName, studentName, academicYear, admissionNo)
   
-          // Resetting all steps back to 0
-          step1[from.replace(/\s/g, '')] = 0
-          step2[from.replace(/\s/g, '')] = 0
-          step3[from.replace(/\s/g, '')] = 0
-          step4[from.replace(/\s/g, '')] = 0
-          step5[from.replace(/\s/g, '')] = 0
+          // Resetting all step back to 0
+          step[from.replace(/\s/g, '')] = 0
         }
         
         res.send('Successfully added to sheet')
