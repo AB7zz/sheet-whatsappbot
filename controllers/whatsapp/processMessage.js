@@ -21,29 +21,48 @@ async function insertToSheet(upiId, schoolName, studentName, academicYear, admis
 }
 
 function replyMessage(msg, from, token, phone_number_id, buttons) {
-  axios({
-    method: "POST",
-    url:
-      "https://graph.facebook.com/v12.0/" +
-      phone_number_id +
-      "/messages?access_token=" +
-      token,
-    data: {
-      messaging_product: "whatsapp",
-      to: from,
-      type: "interactive",
-      interactive:{
-        type: "button",
-        body: {
-          text: msg,
-        },
-        action: {
-          buttons: buttons
+  if (buttons && buttons.length > 0){
+    axios({
+      method: "POST",
+      url:
+        "https://graph.facebook.com/v12.0/" +
+        phone_number_id +
+        "/messages?access_token=" +
+        token,
+      data: {
+        messaging_product: "whatsapp",
+        to: from,
+        type: "interactive",
+        interactive:{
+          type: "button",
+          body: {
+            text: msg,
+          },
+          action: {
+            buttons: buttons
+          }
         }
-      }
-    },
-    headers: { "Content-Type": "application/json" },
-  });
+      },
+      headers: { "Content-Type": "application/json" },
+    });
+  }else{
+    axios({
+      method: "POST",
+      url:
+        "https://graph.facebook.com/v12.0/" +
+        phone_number_id +
+        "/messages?access_token=" +
+        token,
+      data: {
+        messaging_product: "whatsapp",
+        to: from,
+        text:{
+          body: msg
+        }
+      },
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 }
 
 
@@ -181,6 +200,13 @@ async function processMessage(req, res) {
                 id: "3",
                 title: "School C",
               }
+            },
+            {
+              type: "reply",
+              reply: {
+                id: "4",
+                title: "Go Back",
+              }
             }
           ]
           replyMessage("Please select your school", from, token, phone_number_id, buttons)
@@ -241,15 +267,7 @@ async function processMessage(req, res) {
         // If this is the 5th message from the user, then its the admission no.
         else if(step[from.replace(/\s/g, '')] == 4){
           admissionNo = msg
-          const buttons = [
-            {
-              type: "reply",
-              reply: {
-                id: "1",
-                title: "Go Back",
-              }
-            }
-          ]
+          const buttons = []
           replyMessage("Thank you, we are processing the order immediately...", from, token, phone_number_id, buttons)
           step[from.replace(/\s/g, '')] = 5
         }
