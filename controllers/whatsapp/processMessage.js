@@ -171,6 +171,10 @@ async function processMessage(req, res) {
         3. Download the image into assets/{mobile}/UPIID.png
         4. Extract the text from the image using a API
         */
+        if(msg && step[from.replace(/\s/g, '')] == 0 && msg.length != 12){
+          replyMessage("Please enter a valid UPI ID", from, token, phone_number_id, [])
+          res.send('No message found')
+        }
         if(!msg || msg.length == 0){
           msg = req.body.entry[0].changes[0].value.messages[0]?.image.id
           if(!msg || msg.length == 0){
@@ -182,6 +186,10 @@ async function processMessage(req, res) {
           msg = await extractTextFromImage(from)
           if(!msg || msg.length == 0){
             replyMessage("Some error occurred. Please type in the UPI ID", from, token, phone_number_id, [])
+            res.send('No message found')
+          }
+          if(msg.length != 12){
+            replyMessage("Please enter a valid UPI ID", from, token, phone_number_id, [])
             res.send('No message found')
           }
           step[from.replace(/\s/g, '')] = 0
