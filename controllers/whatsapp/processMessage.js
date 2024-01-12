@@ -171,7 +171,7 @@ async function processMessage(req, res) {
         3. Download the image into assets/{mobile}/UPIID.png
         4. Extract the text from the image using a API
         */
-        if(msg && step[from.replace(/\s/g, '')] == 0 && msg.length != 12){
+        if(msg && (!step[from.replace(/\s/g, '')] || step[from.replace(/\s/g, '')] == 0) && msg.length != 12){
           replyMessage("Please enter a valid UPI ID", from, token, phone_number_id, [])
           res.send('No message found')
         }
