@@ -173,7 +173,7 @@ async function processMessage(req, res) {
         */
         if(msg && (!step[from.replace(/\s/g, '')] || step[from.replace(/\s/g, '')] == 0) && msg.length != 12){
           replyMessage("Please enter a valid UPI ID", from, token, phone_number_id, [])
-          res.send('No message found')
+          return res.send('No message found')
         }
         if(!msg || msg.length == 0){
           msg = req.body.entry[0].changes[0].value.messages[0]?.image.id
