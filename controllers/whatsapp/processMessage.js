@@ -36,8 +36,16 @@ function replyMessage(msg, from, token, phone_number_id, buttons) {
         type: "interactive",
         interactive:{
           type: "list",
+          type: "list",
+          header: {
+            type: "text",
+            text: "your-header-content"
+          },
           body: {
-            text: msg,
+            text: "your-text-message-content"
+          },
+          footer: {
+            text: "your-footer-content"
           },
           action: {
             button: "cta-button-content",
