@@ -40,6 +40,7 @@ function replyMessage(msg, from, token, phone_number_id, buttons) {
             text: msg,
           },
           action: {
+            button: "cta-button-content",
             sections:[
               {
                 title:"your-section-title-content",
