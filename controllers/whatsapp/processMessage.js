@@ -172,25 +172,26 @@ async function processMessage(req, res) {
         4. Extract the text from the image using a API
         */
         if(msg && (!step[from.replace(/\s/g, '')] || step[from.replace(/\s/g, '')] == 0) && msg.length != 12){
-          replyMessage("Please enter a valid UPI ID", from, token, phone_number_id, [])
-          return res.send('No message found')
+          replyMessage("Please enter a valid UPI Transaction ID", from, token, phone_number_id, [])
+          return res.send('Invalid UPI Transaction ID entered')
         }
         if(!msg || msg.length == 0){
           msg = req.body.entry[0].changes[0].value.messages[0]?.image.id
           if(!msg || msg.length == 0){
             replyMessage("Please enter a message", from, token, phone_number_id, [])
-            res.send('No message found')
+            return res.send('No message found')
           }
           const imgURL = await getURL(msg)
           await downloadImg(from, imgURL)
           msg = await extractTextFromImage(from)
           if(!msg || msg.length == 0){
-            replyMessage("Some error occurred. Please type in the UPI ID", from, token, phone_number_id, [])
-            res.send('No message found')
+            replyMessage("Some error occurred. Please type in the UPI Transaction ID", from, token, phone_number_id, [])
+            return res.send('Unable to extract Transaction ID from Screenshot')
           }
-          if(msg.length != 12){
-            replyMessage("Please enter a valid UPI ID", from, token, phone_number_id, [])
-            res.send('No message found')
+          const regex = /[a-zA-Z]/
+          if(msg.length != 12 || regex.test(msg)){
+            replyMessage("Please send a valid screenshot of UPI Transaction", from, token, phone_number_id, [])
+            return res.send('Invalid UPI Transaction ID Screenshot')
           }
           step[from.replace(/\s/g, '')] = 0
         }
