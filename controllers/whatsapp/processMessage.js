@@ -171,6 +171,7 @@ async function processMessage(req, res) {
             replyMessage("Some error occurred. Please type in the UPI ID", from, token, phone_number_id, [])
             res.send('No message found')
           }
+          step[from.replace(/\s/g, '')] = 0
         }
 
         if(msg === "Go Back"){
@@ -200,13 +201,6 @@ async function processMessage(req, res) {
               reply: {
                 id: "3",
                 title: "School C",
-              }
-            },
-            {
-              type: "reply",
-              reply: {
-                id: "4",
-                title: "Go Back",
               }
             }
           ]
