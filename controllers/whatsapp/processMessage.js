@@ -223,14 +223,16 @@ async function processMessage(req, res) {
           step5[from.replace(/\s/g, '')] = 1
         }
         
-        insertToSheet(upiID, schoolName, studentName, academicYear, admissionNo)
-
-        // Resetting all steps back to 0
-        step1[from.replace(/\s/g, '')] = 0
-        step2[from.replace(/\s/g, '')] = 0
-        step3[from.replace(/\s/g, '')] = 0
-        step4[from.replace(/\s/g, '')] = 0
-        step5[from.replace(/\s/g, '')] = 0
+        if(step1[from.replace(/\s/g, '')] == 1 && step2[from.replace(/\s/g, '')] == 1 && step3[from.replace(/\s/g, '')] == 1 && step4[from.replace(/\s/g, '')] == 1 && step5[from.replace(/\s/g, '')] == 1){
+          insertToSheet(upiID, schoolName, studentName, academicYear, admissionNo)
+  
+          // Resetting all steps back to 0
+          step1[from.replace(/\s/g, '')] = 0
+          step2[from.replace(/\s/g, '')] = 0
+          step3[from.replace(/\s/g, '')] = 0
+          step4[from.replace(/\s/g, '')] = 0
+          step5[from.replace(/\s/g, '')] = 0
+        }
         
         res.send('Successfully added to sheet')
       }
