@@ -41,6 +41,9 @@ function replyMessage(msg, from, token, phone_number_id, content) {
             type: "text",
             text: msg
           },
+          body: {
+            text: ""
+          },
           action: {
             button: "SELECT",
             sections: content
